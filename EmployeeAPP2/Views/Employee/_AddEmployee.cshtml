@@ -1,0 +1,96 @@
+﻿@model EmployeeAPP2.Models.ViewModels.EmployeeDepartmentViewModel
+
+
+@using (Html.BeginForm("Save", "Employee", FormMethod.Post, new { id = "employeeForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="modal-header">
+        <h5 class="modal-title">@((Model.Employee != null && Model.Employee.Id > 0) ? "Edit Employee" : "Add Employee")</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+        @Html.HiddenFor(m => m.Employee.Id)
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.FirstName, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.FirstName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.FirstName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.MiddleName, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.MiddleName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.MiddleName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.LastName, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.LastName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.LastName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.DateOfBirth, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.DateOfBirth, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.DateOfBirth, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.Email, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.Email, new { @class = "form-control", @type = "email" })
+            @Html.ValidationMessageFor(m => m.Employee.Email, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.MobileNumber, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.MobileNumber, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.MobileNumber, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.StreetAddress, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.StreetAddress, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.StreetAddress, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.City, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.City, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.City, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.State, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.State, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.State, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.Country, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.Country, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.Country, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.ZipCode, new { @class = "form-label" })
+            @Html.TextBoxFor(m => m.Employee.ZipCode, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Employee.ZipCode, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Employee.DepartmentId, "Department", new { @class = "form-label" })
+            @Html.DropDownListFor(m => m.Employee.DepartmentId, new SelectList(Model.Departments, "DepartmentID", "DepartmentName"), "Select Department", new { @class = "form-select" })
+            @Html.ValidationMessageFor(m => m.Employee.DepartmentId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    </div>
+
+ 
+}
+
