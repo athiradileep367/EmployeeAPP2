@@ -3,6 +3,7 @@ using EmployeeAPP2.Models;
 using EmployeeAPP2.Models.ViewModels;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System;
 
 namespace EmployeeAPP2.Controllers
 {
@@ -45,18 +46,28 @@ namespace EmployeeAPP2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Save(Employee employee)
         {
-            if (ModelState.IsValid)
+            try
             {
-                if (employee.Id == 0)
+
+                if (ModelState.IsValid)
                 {
-                    employeeDAL.AddEmployee(employee);      // Add new employee
+                    if (employee.Id == 0)
+                    {
+                        employeeDAL.AddEmployee(employee);      // Add new employee
+                    }
+                    else
+                    {
+                        employeeDAL.UpdateEmployee(employee);   // Update existing employee
+                    }
+                    return Json(new { success = true });
                 }
-                else
-                {
-                    employeeDAL.UpdateEmployee(employee);   // Update existing employee
-                }
-                return Json(new { success = true });
             }
+            
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ("An error while adding employee "+ ex.Message);
+            }
+            
 
           
         // If validation fails, reload form with current data and departments
@@ -81,25 +92,40 @@ namespace EmployeeAPP2.Controllers
         // GET: /Employee/Edit/5
         public ActionResult EditEmployee(int id)
         {
-            var employee = employeeDAL.GetEmployeeById( id); 
-            if (employee == null) return HttpNotFound();
-
+            
+                var employee = employeeDAL.GetEmployeeById(id);
+                try
+                {
+                    if (employee == null) return HttpNotFound();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ("An error while getting employee by ID " + ex.Message);
+            }
             var model = new EmployeeDepartmentViewModel
             {
                 Employee = employee,
                 Departments = departmentDAL.GetAllDepartments()
             };
             return PartialView("_AddEmployee", model); // Reuse same modal
-        }
+        
+            }
 
         // POST: /Employee/Update
         [HttpPost]
         public ActionResult Update(Employee emp)
         {
-            if (ModelState.IsValid)
+            try
             {
-                employeeDAL.UpdateEmployee(emp);
-                return Json(new { success = true });
+                if (ModelState.IsValid)
+                {
+                    employeeDAL.UpdateEmployee(emp);
+                    return Json(new { success = true });
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ("An error while updating employee " + ex.Message);
             }
 
             var model = new EmployeeDepartmentViewModel
@@ -114,8 +140,10 @@ namespace EmployeeAPP2.Controllers
         [HttpPost]
         public ActionResult DeleteEmployee(int Id)
         {
-            employeeDAL.DeleteEmployee(Id);
-            return Json(new { success = true });
+           
+                employeeDAL.DeleteEmployee(Id);
+                return Json(new { success = true });
+           
         }
     }
 }

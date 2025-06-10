@@ -12,6 +12,7 @@
 
     <div class="modal-body">
         @Html.HiddenFor(m => m.Employee.Id)
+        <p>@ViewBag.ErrorMessage</p>
 
         <div class="mb-3">
             @Html.LabelFor(m => m.Employee.FirstName, new { @class = "form-label" })

@@ -2,7 +2,11 @@
 
 @{
     ViewBag.Title = "Employees";
-}
+    if (ViewBag.ErrorMessage != null)
+    {
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+        }
+    }
 
 <h2>Employees</h2>
 
@@ -11,7 +15,7 @@
 <table id="employeesTable" class="table table-striped table-bordered" style="width:100%">
     <thead>
         <tr>
-            
+
             <th>First Name</th>
             <th>Middle Name</th>
             <th>Last Name</th>
@@ -55,7 +59,7 @@
     <script>
         var table;
         $(document).ready(function () {
-            // Initialize DataTable with AJAX 
+            // Initialize DataTable with AJAX
              table = $('#employeesTable').DataTable({
                 "ajax": {
                     "url": '@Url.Action("GetEmployees", "Employee")',
@@ -63,7 +67,7 @@
                     "datatype": "json"
                 },
                 "columns": [
-                   
+
                     { "data": "FirstName" },
                     {"data": "MiddleName"},
                     { "data": "LastName" },
@@ -163,7 +167,7 @@
 
         });
     </script>
-   
-    
+
+
 
 }
