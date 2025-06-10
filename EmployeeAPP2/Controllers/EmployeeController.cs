@@ -65,7 +65,7 @@ namespace EmployeeAPP2.Controllers
             
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = ("An error while adding employee "+ ex.Message);
+                ViewBag.ErrorMessage = (ex.Message);
             }
             
 
@@ -86,55 +86,58 @@ namespace EmployeeAPP2.Controllers
             return Json(new { data = employees }, JsonRequestBehavior.AllowGet);
         }
 
-     
 
-       
+
+
         // GET: /Employee/Edit/5
         public ActionResult EditEmployee(int id)
         {
             
                 var employee = employeeDAL.GetEmployeeById(id);
-                try
+
+                if (employee == null) return HttpNotFound();
+                var model = new EmployeeDepartmentViewModel
                 {
-                    if (employee == null) return HttpNotFound();
-            }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = ("An error while getting employee by ID " + ex.Message);
-            }
-            var model = new EmployeeDepartmentViewModel
-            {
-                Employee = employee,
-                Departments = departmentDAL.GetAllDepartments()
-            };
-            return PartialView("_AddEmployee", model); // Reuse same modal
+                    Employee = employee,
+                    Departments = departmentDAL.GetAllDepartments()
+                };
+                return PartialView("_AddEmployee", model); // Reuse same modal
+            
+         
+        }
+            //var model = new EmployeeDepartmentViewModel
+            //{
+            //    Employee = employee,
+            //    Departments = departmentDAL.GetAllDepartments()
+            //};
+            //return PartialView("_AddEmployee", model); // Reuse same modal
         
-            }
+            //}
 
         // POST: /Employee/Update
-        [HttpPost]
-        public ActionResult Update(Employee emp)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    employeeDAL.UpdateEmployee(emp);
-                    return Json(new { success = true });
-                }
-            }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = ("An error while updating employee " + ex.Message);
-            }
+        //[HttpPost]
+        //public ActionResult Update(Employee emp)
+        //{
+        //    try
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            employeeDAL.UpdateEmployee(emp);
+        //            return Json(new { success = true });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.ErrorMessage = ("An error while updating employee " + ex.Message);
+        //    }
 
-            var model = new EmployeeDepartmentViewModel
-            {
-                Employee = emp,
-                Departments = departmentDAL.GetAllDepartments()
-            };
-            return PartialView("_AddEmployee", model);
-        }
+        //    var model = new EmployeeDepartmentViewModel
+        //    {
+        //        Employee = emp,
+        //        Departments = departmentDAL.GetAllDepartments()
+        //    };
+        //    return PartialView("_AddEmployee", model);
+        //}
 
         // POST: /Employee/Delete/5
         [HttpPost]

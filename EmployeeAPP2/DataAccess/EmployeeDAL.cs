@@ -63,9 +63,8 @@ namespace EmployeeAPP2.DataAccess
         public Employee GetEmployeeById(int id)
         {
             Employee employee = null;
-            try
-            {
-                using (SqlConnection con = new SqlConnection(connectionString))
+            
+            using (SqlConnection con = new SqlConnection(connectionString))
                 {
                     SqlCommand cmd = new SqlCommand("GetEmployeeById", con);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -99,16 +98,7 @@ namespace EmployeeAPP2.DataAccess
                 }
                 return employee;
             
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception("Database Error while getting employee by Id", ex);
-            }
-            catch (Exception ex1)
-            {
-                throw new Exception(" An Unexpected Error", ex1);
-            }
-
+          
            
         }
 
@@ -134,7 +124,8 @@ namespace EmployeeAPP2.DataAccess
                     }
                     cmd.Parameters.AddWithValue("@LastName", emp.LastName);
                     cmd.Parameters.AddWithValue("@DateOfBirth", emp.DateOfBirth);
-                    
+                    cmd.Parameters.AddWithValue("@Email", emp.Email);
+
 
 
                     cmd.Parameters.AddWithValue("@MobileNumber", emp.MobileNumber);
