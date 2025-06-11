@@ -16,6 +16,11 @@ namespace EmployeeAPP2.Controllers
        
             public ActionResult Index()
         {
+            if (Session["Email"] == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var employees = employeeDAL.GetAllEmployees();
             var departments = departmentDAL.GetAllDepartments();
 
