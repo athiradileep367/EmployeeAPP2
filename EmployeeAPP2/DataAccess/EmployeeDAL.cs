@@ -1,4 +1,5 @@
 ﻿using EmployeeAPP2.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -110,35 +111,34 @@ namespace EmployeeAPP2.DataAccess
             {
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    SqlCommand cmd = new SqlCommand("AddEmployee", con);
+                    SqlCommand cmd = new SqlCommand("AddEmployee", con); // NEW JSON-based procedure
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@FirstName", emp.FirstName);
-                    if (string.IsNullOrWhiteSpace(emp.MiddleName))
+                    // Create a JSON object from the Employee
+                    var employeeJson = new
                     {
-                        cmd.Parameters.AddWithValue("@MiddleName", DBNull.Value);
-                    }
-                    else
-                    {
-                        cmd.Parameters.AddWithValue("@MiddleName", emp.MiddleName);
-                    }
-                    cmd.Parameters.AddWithValue("@LastName", emp.LastName);
-                    cmd.Parameters.AddWithValue("@DateOfBirth", emp.DateOfBirth);
-                    cmd.Parameters.AddWithValue("@Email", emp.Email);
+                        FirstName = emp.FirstName,
+                        MiddleName = string.IsNullOrWhiteSpace(emp.MiddleName) ? null : emp.MiddleName,
+                        LastName = emp.LastName,
+                        DateOfBirth = emp.DateOfBirth?.ToString("yyyy-MM-dd"), // Format as string if not null
+                        Email = emp.Email,
+                        MobileNumber = emp.MobileNumber,
+                        StreetAddress = emp.StreetAddress,
+                        City = emp.City,
+                        State = emp.State,
+                        Country = emp.Country,
+                        ZipCode = emp.ZipCode,
+                        DepartmentId = emp.DepartmentId
+                    };
 
+                    string jsonString = JsonConvert.SerializeObject(employeeJson);
 
-
-                    cmd.Parameters.AddWithValue("@MobileNumber", emp.MobileNumber);
-                    cmd.Parameters.AddWithValue("@StreetAddress", emp.StreetAddress);
-                    cmd.Parameters.AddWithValue("@City", emp.City);
-                    cmd.Parameters.AddWithValue("@State", emp.State);
-                    cmd.Parameters.AddWithValue("@Country", emp.Country);
-                    cmd.Parameters.AddWithValue("@ZipCode", emp.ZipCode);
-                    cmd.Parameters.AddWithValue("@DepartmentId", emp.DepartmentId);
+                    cmd.Parameters.AddWithValue("@json", jsonString);
 
                     con.Open();
                     cmd.ExecuteNonQuery();
                 }
+            
             }
             catch (SqlException ex)
             {
@@ -160,7 +160,11 @@ namespace EmployeeAPP2.DataAccess
                 {
                     SqlCommand cmd = new SqlCommand("DeleteEmployee", con);
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Id", Id);
+
+                    // Pass JSON input
+                    var json = JsonConvert.SerializeObject(new { Id = Id });
+                    cmd.Parameters.AddWithValue("@json", json);
+
                     con.Open();
                     cmd.ExecuteNonQuery();
                 }
@@ -182,34 +186,38 @@ namespace EmployeeAPP2.DataAccess
             {
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    SqlCommand cmd = new SqlCommand("UpdateEmployee", con);
-                    cmd.CommandType = CommandType.StoredProcedure;
-
-                    cmd.Parameters.AddWithValue("@Id", emp.Id);
-                    cmd.Parameters.AddWithValue("@FirstName", emp.FirstName);
-                    if (string.IsNullOrWhiteSpace(emp.MiddleName))
+                    using (SqlCommand cmd = new SqlCommand("UpdateEmployee", con))
                     {
-                        cmd.Parameters.AddWithValue("@MiddleName", DBNull.Value);
-                    }
-                    else
-                    {
-                        cmd.Parameters.AddWithValue("@MiddleName", emp.MiddleName);
-                    }
-                    cmd.Parameters.AddWithValue("@LastName", emp.LastName);
-                    cmd.Parameters.AddWithValue("@DateOfBirth", emp.DateOfBirth);
-                    cmd.Parameters.AddWithValue("@Email", emp.Email);
-                    cmd.Parameters.AddWithValue("@MobileNumber", emp.MobileNumber);
-                    cmd.Parameters.AddWithValue("@StreetAddress", emp.StreetAddress);
-                    cmd.Parameters.AddWithValue("@City", emp.City);
-                    cmd.Parameters.AddWithValue("@State", emp.State);
-                    cmd.Parameters.AddWithValue("@Country", emp.Country);
-                    cmd.Parameters.AddWithValue("@ZipCode", emp.ZipCode);
-                    cmd.Parameters.AddWithValue("@DepartmentId", emp.DepartmentId);
+                        cmd.CommandType = CommandType.StoredProcedure;
 
-                    con.Open();
-                    cmd.ExecuteNonQuery();
+                        var employeeJson = new
+                        {
+                            emp.Id,
+                            emp.FirstName,
+                            MiddleName = string.IsNullOrWhiteSpace(emp.MiddleName) ? null : emp.MiddleName,
+                            emp.LastName,
+                            DateOfBirth = emp.DateOfBirth?.ToString("yyyy-MM-dd"),
+                            emp.Email,
+                            emp.MobileNumber,
+                            emp.StreetAddress,
+                            emp.City,
+                            emp.State,
+                            emp.Country,
+                            emp.ZipCode,
+                            emp.DepartmentId
+                        };
+
+                        string jsonString = JsonConvert.SerializeObject(employeeJson);
+                        cmd.Parameters.AddWithValue("@json", jsonString);
+
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
+            
+        
+
             catch (SqlException ex)
             {
           

@@ -1,8 +1,14 @@
 ﻿using BCrypt.Net;
+using EmployeeAPP2.DataAccess;
 using EmployeeAPP2.Models;
 using System;
+using System.Diagnostics;
+using System.Threading;
+using System.Web;
 using System.Web.Mvc;
-using EmployeeAPP2.DataAccess;
+using System.Web.Security;
+using BCrypt;
+
 
 
 namespace EmployeeAPP2.Controllers
@@ -30,7 +36,7 @@ namespace EmployeeAPP2.Controllers
                 //    ModelState.AddModelError("", "Username already exists.");
                 //    return View(user);
                 //}
-                var existingUserMail = userDAL.GetUserByUsername(user.Email);
+                var existingUserMail = userDAL.GetUserByEmail(user.Email);
                 if (existingUserMail != null)
                 {
                     ModelState.AddModelError("", "User's Email already exists.");
@@ -39,9 +45,9 @@ namespace EmployeeAPP2.Controllers
 
 
                 //  Hash password
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
 
-                userDAL.Register(user);
+                 userDAL.Register(user);
                 TempData["Message"] = "Registration successful. Please login.";
                 return RedirectToAction("Login");
             }
@@ -52,20 +58,22 @@ namespace EmployeeAPP2.Controllers
         // GET: /Account/Login
         public ActionResult Login()
         {
+           
             return View();
         }
 
         // POST: /Account/Login
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginViewModel model)
         {
+           
             if (ModelState.IsValid)
             {
-                var user = userDAL.GetUserByUsername(model.Email);
-                if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+                var user = userDAL.GetUserByEmail(model.Email);
+                
+                if (user != null && BCrypt.Net.BCrypt.Verify(model.Password,user.PasswordHash))
                 {
-                    Session["Email"] = user.Email;
+                    FormsAuthentication.SetAuthCookie(user.Email, true);
                     return RedirectToAction("Index", "Employee"); //  redirect to employee dashboard
                 }
                 else
@@ -81,8 +89,48 @@ namespace EmployeeAPP2.Controllers
         // GET: /Account/Logout
         public ActionResult Logout()
         {
-            Session.Clear();
-            return RedirectToAction("Login");
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Login", "Account");
         }
+
+        [Authorize]
+        public ActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Please fill in all required fields." });
+            }
+
+            string email = User.Identity.Name; // email stored during login via FormsAuthentication
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "User is not authenticated." });
+            }
+
+            bool isChanged = userDAL.ChangePasswordByEmail(email, model.CurrentPassword, model.NewPassword);
+
+            if (isChanged)
+            {
+                return Json(new { success = true, message = "Password changed successfully!" });
+            }
+            else
+            {
+                return Json(new { success = false, message = "Current password is incorrect." });
+            }
+        }
+
+
+
+
+
     }
 }

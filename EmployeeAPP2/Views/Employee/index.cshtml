@@ -13,13 +13,18 @@
         <h1>Employees</h1>
 
         <div style="width: 100%; display: flex; justify-content: flex-end; padding: 20px;">
-            <form method="post" action="/Admin/Logout">
+            <form method="post" action="/Account/Logout">
 
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-danger">Logout</button>
             </form>
         </div>
     </div>
+</div>
+<div class="text-end mb-3">
+    <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-warning">
+        Change Password
+    </a>
 </div>
 
 

@@ -1,25 +1,27 @@
 ﻿using EmployeeAPP2.DataAccess;
 using EmployeeAPP2.Models;
 using EmployeeAPP2.Models.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using System;
+using System.Web.Security;
 
 namespace EmployeeAPP2.Controllers
 {
+    /*[Authorize]*/
     public class EmployeeController : Controller
     {
         private readonly EmployeeDAL employeeDAL = new EmployeeDAL();
         private readonly DepartmentDAL departmentDAL = new DepartmentDAL();
 
         // GET: /Employee/
-       
+
+
+
+        [Authorize]
             public ActionResult Index()
         {
-            if (Session["Email"] == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
+     
 
             var employees = employeeDAL.GetAllEmployees();
             var departments = departmentDAL.GetAllDepartments();
